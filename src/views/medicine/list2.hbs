@@ -1,0 +1,152 @@
+<div class="container p-4">
+    <div class="container p-4">
+        <input type="text" id="formulario" class="form-control my-2">
+        <button class="btn btn btn-dark mb-2" id="boton">Buscar</button>
+        <div class="row clsScroll" id="rows">
+
+        </div>
+    </div>
+
+</div>
+
+
+<div class="container">
+    <br>
+    <!-- Small modal -->
+    <div class="modal fade" id="myModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Drug Data</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+
+                </div>
+                <div class="modal-body">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"
+    integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+
+<script>
+    $(document).ready(function () {
+
+
+        ajax();
+
+
+
+
+    });
+
+
+
+
+    function ajax() {
+        const http = new XMLHttpRequest();
+        const url = '/medicine/products';
+
+        http.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+
+                try {
+                    let resObj = JSON.parse(this.responseText);
+                    let res = document.querySelector('#rows');
+                    const formulario = document.querySelector('#formulario');
+                    const boton = document.querySelector('#boton');
+
+                    const filtrar = () => {
+                        res.innerHTML = '';
+                        const texto = formulario.value.toLowerCase();
+                        for (let item of resObj) {
+                            let nombre = item.name.toLowerCase();
+                            if (nombre.indexOf(texto) !== -1) {
+                                res.innerHTML += `
+                             <div class="col-md-3" id="card-p">
+                             <div class="card text-center">
+                             <div class="card-body" id="cards" onclick="modals(${item.id})" style="background: ${item.expire};" data-target="#myModal" data-toggle="modal" type="button">
+                             <h3 class="card-title text-uppercase" id="name"> ${item.name}</h3>
+                             <p>Date expire:</p>
+                             <p id="dateExpire">${item.dateExpire}</p>
+                             <p id="expire">Expire ${item.dateEx}</p>
+                             
+                            
+                             </div>
+                             <div class="card-body" style="background: ${item.expire};">
+                                 <a href="/medicine/delete/${item.id}" class="btn btn-danger" id="delete">Delete</a>
+                                 <a href="/medicine/edit/${item.id}" class="btn btn-secondary">Edit</a>
+                              </div>
+                             </div>
+                             </div>            
+                            `
+
+                            }
+                        }
+                        if (res.innerHTML === '') {
+                            res.innerHTML += `
+                            <div style="width: 50%; margin: 0 auto;">
+                                <h3>There are not medicine</h3>
+                            </div>
+                         
+                    `
+                        }
+                    }
+
+
+
+
+
+                    boton.addEventListener('click', filtrar);
+                    formulario.addEventListener('keyup', filtrar)
+                    filtrar();
+                } catch (e) {
+
+                }
+            }
+        }
+        http.open("GET", url);
+        http.send();
+    }
+
+    function modals(id) {
+        const http = new XMLHttpRequest();
+        const url = '/medicine/products';
+        http.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                try {
+                    let resObj = JSON.parse(this.responseText);
+                    let res = document.querySelector('#rows');
+                    res.innerHTML += '';
+
+                    for (let item of resObj) {
+                        if (id == item.id) {
+                            $('.modal-body').html('<h6><b>Name: </b>' + item.name + '</h6>' +
+                                '<h6><b>Id: </b>' + item.id + '</h6>' +
+                                '<h6><b>Date expire: </b>' + item.dateExpire + '</h6>' +
+                                '<h6><b>Expire time: </b>' + item.dateEx + '</h6>' +
+                                '<h6><b>Date of creatoon: </b>' + item.created_at + '</h6>' +
+                                '<h6><b>Description: </b></h6>' +
+                                '<p>' + item.description + '</p>'
+                            );
+                        }
+                    }
+                } catch (e) {
+
+                }
+            }
+        }
+        http.open("GET", url);
+        http.send();
+    }
+
+
+
+
+</script>
