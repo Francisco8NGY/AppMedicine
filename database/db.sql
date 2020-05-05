@@ -17,7 +17,7 @@ ALTER TABLE users
 
 DESCRIBE users;
 
---Links tables
+--Medicine tables
 CREATE TABLE medicine (
     id INT(11) NOT NULL,
     name VARCHAR(150) NOT NULL,
@@ -36,3 +36,4 @@ ALTER TABLE medicine
     MODIFY id INT(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT = 2;
 
 DESCRIBE medicine;
+

@@ -1,12 +1,10 @@
-<div class="container p-4">
-    <div class="container p-4">
-        <input type="text" id="formulario" class="form-control my-2">
-        <button class="btn btn btn-dark mb-2" id="boton">Buscar</button>
-        <div class="row clsScroll" id="rows">
+<div class="container p-4" id="container">
+    {{#each dict}}
+    <input type="number" id="state" hidden value="{{state}}">
+    {{/each}}
+    <div class="row " id="rows">
 
-        </div>
     </div>
-
 </div>
 
 
@@ -38,16 +36,17 @@
 <script>
     $(document).ready(function () {
 
-
-        ajax();
-
-
-
+        const state = $('#state').val();
+        console.log(state)
+        if (state == 0) {
+            ajax();
+        } else if (state == 1) {
+            ajax1();
+        } else if (state == 2) {
+            ajax2();
+        }
 
     });
-
-
-
 
     function ajax() {
         const http = new XMLHttpRequest();
@@ -61,6 +60,10 @@
                     let res = document.querySelector('#rows');
                     const formulario = document.querySelector('#formulario');
                     const boton = document.querySelector('#boton');
+                    const expire = 0;
+                    $('#all').click(function () {
+                        expire = 2
+                    });
 
                     const filtrar = () => {
                         res.innerHTML = '';
@@ -68,41 +71,32 @@
                         for (let item of resObj) {
                             let nombre = item.name.toLowerCase();
                             if (nombre.indexOf(texto) !== -1) {
-                                res.innerHTML += `
-                             <div class="col-md-3" id="card-p">
-                             <div class="card text-center">
-                             <div class="card-body" id="cards" onclick="modals(${item.id})" style="background: ${item.expire};" data-target="#myModal" data-toggle="modal" type="button">
-                             <h3 class="card-title text-uppercase" id="name"> ${item.name}</h3>
-                             <p>Date expire:</p>
-                             <p id="dateExpire">${item.dateExpire}</p>
-                             <p id="expire">Expire ${item.dateEx}</p>
-                             
-                            
-                             </div>
-                             <div class="card-body" style="background: ${item.expire};">
-                                 <a href="/medicine/delete/${item.id}" class="btn btn-danger" id="delete">Delete</a>
-                                 <a href="/medicine/edit/${item.id}" class="btn btn-secondary">Edit</a>
-                              </div>
-                             </div>
-                             </div>            
-                            `
+                                console.log(expire);
 
+                                res.innerHTML += `
+                                    <div class="card" id="card">
+                                        <div class="card-header" id="card-header" onclick="modals(${item.id})" data-target="#myModal" data-toggle="modal" type="button">
+                                            <h1>${item.name}</h1>
+                                         </div>
+                                        <div class="card-body" id="card-body" style="background: ${item.expire};">
+                                            <p>Date expire:</p>
+                                             <p id="dateExpire">${item.dateExpire}</p>
+                                             <p id="expire">Expire ${item.dateEx}</p>
+
+                                             <a href="/medicine/delete/${item.id}" class="btn btn-danger" id="delete">Delete</a>
+                                             <a href="/medicine/edit/${item.id}" class="btn btn-secondary">Edit</a>
+                                        </div>                                      
+                                    </div>`
                             }
                         }
                         if (res.innerHTML === '') {
                             res.innerHTML += `
                             <div style="width: 50%; margin: 0 auto;">
                                 <h3>There are not medicine</h3>
-                            </div>
-                         
-                    `
+                            </div>`
                         }
+
                     }
-
-
-
-
-
                     boton.addEventListener('click', filtrar);
                     formulario.addEventListener('keyup', filtrar)
                     filtrar();
@@ -114,6 +108,130 @@
         http.open("GET", url);
         http.send();
     }
+
+    function ajax2() {
+        const http = new XMLHttpRequest();
+        const url = '/medicine/expired';
+
+        http.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+
+                try {
+                    let resObj = JSON.parse(this.responseText);
+                    let res = document.querySelector('#rows');
+                    const formulario = document.querySelector('#formulario');
+                    const boton = document.querySelector('#boton');
+                    const expire = 0;
+                    $('#all').click(function () {
+                        expire = 2
+                    });
+
+                    const filtrar = () => {
+                        res.innerHTML = '';
+                        const texto = formulario.value.toLowerCase();
+                        for (let item of resObj) {
+                            let nombre = item.name.toLowerCase();
+                            if (nombre.indexOf(texto) !== -1) {
+                                console.log(expire);
+
+                                res.innerHTML += `
+                                    <div class="card" id="card">
+                                        <div class="card-header" id="card-header" onclick="modals(${item.id})" data-target="#myModal" data-toggle="modal" type="button">
+                                            <h1>${item.name}</h1>
+                                         </div>
+                                        <div class="card-body" id="card-body" style="background: ${item.expire};">
+                                            <p>Date expire:</p>
+                                             <p id="dateExpire">${item.dateExpire}</p>
+                                             <p id="expire">Expire ${item.dateEx}</p>
+
+                                             <a href="/medicine/delete/${item.id}" class="btn btn-danger" id="delete">Delete</a>
+                                             <a href="/medicine/edit/${item.id}" class="btn btn-secondary">Edit</a>
+                                        </div>                                      
+                                    </div>`
+                            }
+                        }
+                        if (res.innerHTML === '') {
+                            res.innerHTML += `
+                            <div style="width: 50%; margin: 0 auto;">
+                                <h3>There are not medicine</h3>
+                            </div>`
+                        }
+
+                    }
+                    boton.addEventListener('click', filtrar);
+                    formulario.addEventListener('keyup', filtrar)
+                    filtrar();
+                } catch (e) {
+
+                }
+            }
+        }
+        http.open("GET", url);
+        http.send();
+    }
+
+    function ajax1() {
+        const http = new XMLHttpRequest();
+        const url = '/medicine/up';
+
+        http.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+
+                try {
+                    let resObj = JSON.parse(this.responseText);
+                    let res = document.querySelector('#rows');
+                    const formulario = document.querySelector('#formulario');
+                    const boton = document.querySelector('#boton');
+                    const expire = 0;
+                    $('#all').click(function () {
+                        expire = 2
+                    });
+
+                    const filtrar = () => {
+                        res.innerHTML = '';
+                        const texto = formulario.value.toLowerCase();
+                        for (let item of resObj) {
+                            let nombre = item.name.toLowerCase();
+                            if (nombre.indexOf(texto) !== -1) {
+                                console.log(expire);
+
+                                res.innerHTML += `
+                                    <div class="card" id="card">
+                                        <div class="card-header" id="card-header" onclick="modals(${item.id})" data-target="#myModal" data-toggle="modal" type="button">
+                                            <h1>${item.name}</h1>
+                                         </div>
+                                        <div class="card-body" id="card-body" style="background: ${item.expire};">
+                                            <p>Date expire:</p>
+                                             <p id="dateExpire">${item.dateExpire}</p>
+                                             <p id="expire">Expire ${item.dateEx}</p>
+
+                                             <a href="/medicine/delete/${item.id}" class="btn btn-danger" id="delete">Delete</a>
+                                             <a href="/medicine/edit/${item.id}" class="btn btn-secondary">Edit</a>
+                                        </div>                                      
+                                    </div>`
+                            }
+                        }
+                        if (res.innerHTML === '') {
+                            res.innerHTML += `
+                            <div style="width: 50%; margin: 0 auto;">
+                                <h3>There are not medicine</h3>
+                            </div>`
+                        }
+
+                    }
+                    boton.addEventListener('click', filtrar);
+                    formulario.addEventListener('keyup', filtrar)
+                    filtrar();
+                } catch (e) {
+
+                }
+            }
+        }
+        http.open("GET", url);
+        http.send();
+    }
+
+
 
     function modals(id) {
         const http = new XMLHttpRequest();

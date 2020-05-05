@@ -26,42 +26,35 @@ router.post('/add', isLoggedIn, async (req, res) => {
 });
 
 router.get('/', isLoggedIn, async (req, res) => {
-    const medicine = await pool.query('SELECT * FROM medicine WHERE user_id = ?', [req.user.id]);
-
     var dict = [];
-    console.log(medicine);
-
-    medicine.forEach(x => {
-
-        var day = moment(x.dateExpire, ["MM-DD-YYYY", "YYYY-MM-DD"]);
-        const m = moment(day);
-
-
-
-        var now = moment();
-        var expire = 0;
-        if (now > m) {
-            expire = "red"
-        } else {
-            expire = 'white'
-        }
-
-        dict.push({
-            id: x.id,
-            name: x.name,
-            dateExpire: moment(x.dateExpire).format('YYYY-MM-DD'),
-            description: x.description,
-            user_id: x.user_id,
-            created_at: moment(x.created_at).format('YYYY-MM-DD'),
-            dateEx: m.fromNow(),
-            expire: expire,
-        });
+    const state = 0;
+    dict.push({
+        state: state
     });
 
+    res.render('medicine/list2', { dict });
+});
 
+router.get('/uped', isLoggedIn, async (req, res) => {
 
+    var dict = [];
+    const state = 1;
+    dict.push({
+        state: state
+    });
     //res.render('medicine/list', { dict });
-    res.render('medicine/list2');
+    res.render('medicine/list2', { dict });
+});
+
+router.get('/expire', isLoggedIn, async (req, res) => {
+
+    var dict = [];
+    const state = 2;
+    dict.push({
+        state: state
+    });
+    //res.render('medicine/list', { dict });
+    res.render('medicine/list2', { dict });
 });
 
 
@@ -85,7 +78,7 @@ router.get('/edit/:id', isLoggedIn, async (req, res) => {
             description: x.description,
         });
     });
-    console.log(dict)
+
     res.render('medicine/edit', { medicine: dict });
 });
 
@@ -105,17 +98,12 @@ router.post('/edit/:id', isLoggedIn, async (req, res) => {
 
 router.get('/products', isLoggedIn, async (req, res) => {
     const medicine = await pool.query('SELECT * FROM medicine WHERE user_id = ?', [req.user.id]);
-
     var dict = [];
-    console.log(medicine);
-
+    console.log('entro products')
     medicine.forEach(x => {
 
         var day = moment(x.dateExpire, ["MM-DD-YYYY", "YYYY-MM-DD"]);
         const m = moment(day);
-
-
-
         var now = moment();
         var expire = 0;
         if (now > m) {
@@ -135,10 +123,69 @@ router.get('/products', isLoggedIn, async (req, res) => {
             expire: expire,
         });
     });
+    res.json(dict);
+});
+
+router.get('/expired', isLoggedIn, async (req, res) => {
+    const medicine = await pool.query('SELECT * FROM medicine WHERE user_id = ?', [req.user.id]);
+    var dict = [];
+    console.log('entro expired')
+    medicine.forEach(x => {
+
+        var day = moment(x.dateExpire, ["MM-DD-YYYY", "YYYY-MM-DD"]);
+        const m = moment(day);
+        var now = moment();
+        var expire = 0;
+        if (now > m) {
+            expire = "red"
+        } else {
+            expire = 'white'
+        }
+        if (m < now) {
+            dict.push({
+                id: x.id,
+                name: x.name,
+                dateExpire: moment(x.dateExpire).format('YYYY-MM-DD'),
+                description: x.description,
+                user_id: x.user_id,
+                created_at: moment(x.created_at).format('YYYY-MM-DD'),
+                dateEx: m.fromNow(),
+                expire: expire,
+            });
+        }
+    });
 
     res.json(dict);
-
-
 });
+
+router.get('/up', isLoggedIn, async (req, res) => {
+    const medicine = await pool.query('SELECT * FROM medicine WHERE user_id = ?', [req.user.id]);
+    var dict = [];
+
+    medicine.forEach(x => {
+
+        var day = moment(x.dateExpire, ["MM-DD-YYYY", "YYYY-MM-DD"]);
+        const m = moment(day);
+        var now = moment();
+        var expire = "white";
+
+        if (m > now) {
+            dict.push({
+                id: x.id,
+                name: x.name,
+                dateExpire: moment(x.dateExpire).format('YYYY-MM-DD'),
+                description: x.description,
+                user_id: x.user_id,
+                created_at: moment(x.created_at).format('YYYY-MM-DD'),
+                dateEx: m.fromNow(),
+                expire: expire,
+            });
+        }
+    });
+
+    res.json(dict);
+});
+
+
 
 module.exports = router;
